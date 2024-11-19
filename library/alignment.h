@@ -37,22 +37,7 @@
 #define MBEDTLS_EFFICIENT_UNALIGNED_ACCESS
 #endif
 
-#if defined(__IAR_SYSTEMS_ICC__) && \
-    (defined(MBEDTLS_ARCH_IS_ARM64) || defined(MBEDTLS_ARCH_IS_ARM32) \
-    || defined(__ICCRX__) || defined(__ICCRL78__) || defined(__ICCRISCV__))
-#pragma language=save
-#pragma language=extended
-#define MBEDTLS_POP_IAR_LANGUAGE_PRAGMA
-/* IAR recommend this technique for accessing unaligned data in
- * https://www.iar.com/knowledge/support/technical-notes/compiler/accessing-unaligned-data
- * This results in a single load / store instruction (if unaligned access is supported).
- * According to that document, this is only supported on certain architectures.
- */
-    #define UINT_UNALIGNED
-typedef uint16_t __packed mbedtls_uint16_unaligned_t;
-typedef uint32_t __packed mbedtls_uint32_unaligned_t;
-typedef uint64_t __packed mbedtls_uint64_unaligned_t;
-#elif defined(MBEDTLS_COMPILER_IS_GCC) && (MBEDTLS_GCC_VERSION >= 40504) && \
+#if defined(MBEDTLS_COMPILER_IS_GCC) && (MBEDTLS_GCC_VERSION >= 40504) && \
     ((MBEDTLS_GCC_VERSION < 60300) || (!defined(MBEDTLS_EFFICIENT_UNALIGNED_ACCESS)))
 /*
  * gcc may generate a branch to memcpy for calls like `memcpy(dest, src, 4)` rather than
